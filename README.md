@@ -45,7 +45,7 @@ private_subnets_cidr = ["10.0.3.0/24", "10.0.4.0/24"]
 availability_zones = ["ap-southeast-1a", "ap-southeast-1b"]
 allowed_ip = "YOUR_IP_ADDRESS/32"  # Replace with your IP
 instance_type = "t2.micro"
-key_name = "your-key-pair"
+key_name = "my-key-pair"
 ```
 
 ### 4. Initialize Terraform
