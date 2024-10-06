@@ -47,7 +47,12 @@ allowed_ip = "YOUR_IP_ADDRESS/32"  # Replace with your IP
 instance_type = "t2.micro"
 key_name = "my-key-pair"
 ```
-
+>Configure allowed_ip:
+>1. Find Your Public IP Address: 
+>- Use a website like WhatIsMyIP.com.
+>- Search “What’s my IP” on Google.
+>- Open CLI/terminal: ```curl ifconfig.me```.
+>2. Update Configuration: Replace **YOUR_IP_ADDRESS** with your actual public IP.
 ### 4. Initialize Terraform
 
 ```bash
