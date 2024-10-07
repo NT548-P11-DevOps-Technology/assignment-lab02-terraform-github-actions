@@ -37,22 +37,15 @@ chmod 400 my-key-pair.pem
 Create a `terraform.tfvars` file:
 
 ```hcl
-region = "ap-southeast-1"
+region = "us-east-1"
 environment = "dev"
 vpc_cidr = "10.0.0.0/16"
 public_subnets_cidr = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnets_cidr = ["10.0.3.0/24", "10.0.4.0/24"]
-availability_zones = ["ap-southeast-1a", "ap-southeast-1b"]
+availability_zones = ["us-east-1a", "us-east-1b"]
 allowed_ip = "YOUR_IP_ADDRESS/32"  # Replace with your IP
 instance_type = "t2.micro"
-key_name = "my-key-pair"
 ```
->Configure allowed_ip:
->1. Find Your Public IP Address: 
->- Use a website like WhatIsMyIP.com.
->- Search “What’s my IP” on Google.
->- Open CLI/terminal: ```curl ifconfig.me```.
->2. Update Configuration: Replace **YOUR_IP_ADDRESS** with your actual public IP.
 ### 4. Initialize Terraform
 
 ```bash
