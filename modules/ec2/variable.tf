@@ -1,7 +1,10 @@
-# modules/ec2/variables.tf
+variable "name" {
+  description = "Name of the EC2 instance"
+  type        = string
+}
 
-variable "environment" {
-  description = "Environment name"
+variable "ami_id" {
+  description = "AMI ID for the EC2 instance"
   type        = string
 }
 
@@ -10,24 +13,14 @@ variable "instance_type" {
   type        = string
 }
 
-variable "public_subnet_id" {
-  description = "Public subnet ID"
+variable "subnet_id" {
+  description = "Subnet ID for EC2 instances"
   type        = string
 }
 
-variable "private_subnet_id" {
-  description = "Private subnet ID"
-  type        = string
-}
-
-variable "public_sg_id" {
-  description = "Public security group ID"
-  type        = string
-}
-
-variable "private_sg_id" {
-  description = "Private security group ID"
-  type        = string
+variable "security_group_ids" {
+  description = "List of security group IDs for EC2 instances"
+  type        = list(string)
 }
 
 variable "key_name" {

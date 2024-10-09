@@ -1,53 +1,38 @@
-# modules/security_groups/main.tf
-
-# Public EC2 Security Group
-resource "aws_security_group" "public_ec2" {
-  name        = "${var.environment}-public-ec2-sg"
-  description = "Security group for public EC2 instances"
+# Security group module
+resource "aws_security_group" "this" {
+  name        = "${var.name}-sg"
+  description = var.description
   vpc_id      = var.vpc_id
 
-  ingress {
-    description = "SSH from specific IP"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.allowed_ip]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
-    Name = "${var.environment}-public-ec2-sg"
+    Name = "${var.name}-sg"
   }
 }
 
-# Private EC2 Security Group
-resource "aws_security_group" "private_ec2" {
-  name        = "${var.environment}-private-ec2-sg"
-  description = "Security group for private EC2 instances"
-  vpc_id      = var.vpc_id
+# Ingress rules
+resource "aws_vpc_security_group_ingress_rule" "ingress" {
+  count             = length(var.ingress_rules)
+  security_group_id = aws_security_group.this.id
+  description       = var.ingress_rules[count.index].description
+  from_port         = var.ingress_rules[count.index].from_port
+  to_port           = var.ingress_rules[count.index].to_port
+  ip_protocol       = var.ingress_rules[count.index].protocol
 
-  ingress {
-    description     = "SSH from public EC2"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.public_ec2.id]
-  }
+  # Conditional logic for CIDR or security group ID
+  cidr_ipv4                    = (var.ingress_rules[count.index].ip != null) ? var.ingress_rules[count.index].ip : ""
+  referenced_security_group_id = var.ingress_rules[count.index].security_group_id != null ? var.ingress_rules[count.index].security_group_id : ""
+}
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+# Egress rules
+resource "aws_vpc_security_group_egress_rule" "egress" {
+  count             = length(var.egress_rules)
+  security_group_id = aws_security_group.this.id
+  description       = var.egress_rules[count.index].description
+  from_port         = var.egress_rules[count.index].from_port
+  to_port           = var.egress_rules[count.index].to_port
+  ip_protocol       = var.egress_rules[count.index].protocol
 
-  tags = {
-    Name = "${var.environment}-private-ec2-sg"
-  }
+  # Conditional logic for CIDR or security group ID
+  cidr_ipv4                    = var.egress_rules[count.index].ip != null ? var.egress_rules[count.index].ip : ""
+  referenced_security_group_id = var.egress_rules[count.index].security_group_id != null ? var.egress_rules[count.index].security_group_id : ""
 }

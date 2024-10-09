@@ -1,17 +1,15 @@
-# modules/keypair/main.tf
-
+# Key Pair Module
 resource "tls_private_key" "this" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
+  algorithm = var.algorithm
 }
 
 resource "aws_key_pair" "this" {
-  key_name   = "${var.environment}-key"
+  key_name   = "${var.name}-key"
   public_key = tls_private_key.this.public_key_openssh
 }
 
 resource "local_file" "private_key" {
   content         = tls_private_key.this.private_key_pem
-  filename        = "${path.root}/${var.environment}-key.pem"
-  file_permission = "0400"
+  filename        = "${path.module}/${var.name}-key.pem"
+  file_permission = "0740"
 }
