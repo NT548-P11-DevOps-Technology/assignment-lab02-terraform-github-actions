@@ -10,9 +10,19 @@ variable "aws_profile" {
   default     = "default"
 }
 
-variable "default_tags" {
-  type        = map(string)
-  description = "Default tags for resources"
+variable "aws_environment" {
+  description = "Environment"
+  type        = string
+}
+
+variable "aws_project" {
+  description = "Project"
+  type        = string
+}
+
+variable "aws_owner" {
+  description = "Owner"
+  type        = string
 }
 
 variable "aws_vpc_config" {
@@ -27,4 +37,14 @@ variable "aws_vpc_config" {
     number_of_availability_zones = number,
     enable_nat_gateway           = bool
   })
+}
+
+variable "aws_public_instance_count" {
+  description = "Number of public instances"
+  type        = number
+}
+
+variable "aws_private_instance_count" {
+  description = "Number of private instances"
+  type        = number
 }

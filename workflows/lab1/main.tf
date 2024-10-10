@@ -9,7 +9,7 @@ locals {
 module "vpc" {
   source = "../../modules/vpc"
 
-  name                 = "lab1"
+  name                 = var.aws_project
   vpc_cidr             = var.aws_vpc_config.cidr_block
   enable_dns_hostnames = var.aws_vpc_config.enable_dns_hostnames
   enable_dns_support   = var.aws_vpc_config.enable_dns_support
@@ -23,7 +23,7 @@ module "vpc" {
 module "keypair" {
   source = "../../modules/keypair"
 
-  name      = "lab1"
+  name      = "${var.aws_project}-keypair"
   algorithm = "ED25519"
 }
 
@@ -35,23 +35,21 @@ data "http" "my_ip" {
 # Create Security Groups for Public Subnets
 module "public_security_group" {
   source      = "../../modules/security_groups"
-  name        = "lab1-public"
+  name        = "${var.aws_project}-public"
   vpc_id      = module.vpc.vpc_id
   description = "Security Group for public subnets"
-  ingress_rules = [
+  ingress_rules_with_cidr = [
     {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = [data.http.my_ip.response_body]
+      from_port = 22
+      to_port   = 22
+      protocol  = "tcp"
+      ip        = "${trimspace(data.http.my_ip.response_body)}/32"
     }
   ]
-  egress_rules = [
+  egress_rules_with_cidr = [
     {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
+      protocol  = "-1"
+      ip        = "0.0.0.0/0"
     }
   ]
 }
@@ -59,10 +57,10 @@ module "public_security_group" {
 # Create Security Groups for Private Subnets
 module "private_security_group" {
   source      = "../../modules/security_groups"
-  name        = "lab1-private"
+  name        = "${var.aws_project}-private"
   vpc_id      = module.vpc.vpc_id
   description = "Security Group for private subnets"
-  ingress_rules = [
+  ingress_rules_with_security_group = [
     {
       from_port         = 22
       to_port           = 22
@@ -70,12 +68,10 @@ module "private_security_group" {
       security_group_id = module.public_security_group.id
     }
   ]
-  egress_rules = [
+  egress_rules_with_cidr = [
     {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
+      protocol  = "-1"
+      ip        = "0.0.0.0/0"
     }
   ]
 }
@@ -101,48 +97,28 @@ data "aws_ami" "ubuntu" {
 }
 
 # Create EC2 instances
-resource "aws_instance" "public_instance" {
+resource "aws_instance" "public_instances" {
+  count                  = var.aws_public_instance_count
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
-  subnet_id              = module.vpc.public_subnets[0]
+  subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   vpc_security_group_ids = [module.public_security_group.id]
   key_name               = module.keypair.key_name
 
   tags = {
-    Name = "public-instance"
+    Name = "${var.aws_project}-public-instance-${count.index}"
   }
 }
 
-resource "aws_instance" "private_instance" {
+resource "aws_instance" "private_instances" {
+  count                  = var.aws_private_instance_count
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
-  subnet_id              = module.vpc.private_subnets[0]
+  subnet_id              = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
   vpc_security_group_ids = [module.private_security_group.id]
   key_name               = module.keypair.key_name
 
   tags = {
-    Name = "private-instance"
+    Name = "${var.aws_project}-private-instance-${count.index}"
   }
 }
-
-# module "public_instance" {
-#   source = "../../modules/ec2"
-
-#   name               = "public"
-#   ami_id             = data.aws_ami.ubuntu.id
-#   instance_type      = "t2.micro"
-#   subnet_id          = module.vpc.public_subnets[0]
-#   security_group_ids = [module.public_security_group.id]
-#   key_name           = module.keypair.key_name
-# }
-
-# module "private_instance" {
-#   source = "../../modules/ec2"
-
-#   name               = "private"
-#   ami_id             = data.aws_ami.ubuntu.id
-#   instance_type      = "t2.micro"
-#   subnet_id          = module.vpc.private_subnets[0]
-#   security_group_ids = [module.private_security_group.id]
-#   key_name           = module.keypair.key_name
-# }
