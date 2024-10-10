@@ -9,7 +9,7 @@ resource "aws_key_pair" "this" {
 }
 
 resource "local_file" "private_key" {
-  content         = tls_private_key.this.private_key_pem
+  content         = tls_private_key.this.private_key_openssh
   filename        = "${path.module}/${var.name}-key.pem"
-  file_permission = "0740"
+  file_permission = "0600"
 }
