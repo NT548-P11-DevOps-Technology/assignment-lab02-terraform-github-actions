@@ -48,3 +48,8 @@ variable "aws_private_instance_count" {
   description = "Number of private instances"
   type        = number
 }
+
+variable "aws_instance_type" {
+  description = "Instance type"
+  type        = string
+}

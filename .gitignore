@@ -3,7 +3,7 @@
 *.tfstate.backup
 *.tfstate.lock
 .terraform/
-*.tfvars
+# *.tfvars
 *.pem
 *.key
 

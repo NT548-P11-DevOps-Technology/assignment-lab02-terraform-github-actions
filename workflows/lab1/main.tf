@@ -100,7 +100,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "public_instances" {
   count                  = var.aws_public_instance_count
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
+  instance_type          = var.aws_instance_type
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   vpc_security_group_ids = [module.public_security_group.id]
   key_name               = module.keypair.key_name
@@ -113,7 +113,7 @@ resource "aws_instance" "public_instances" {
 resource "aws_instance" "private_instances" {
   count                  = var.aws_private_instance_count
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
+  instance_type          = var.aws_instance_type
   subnet_id              = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
   vpc_security_group_ids = [module.private_security_group.id]
   key_name               = module.keypair.key_name
