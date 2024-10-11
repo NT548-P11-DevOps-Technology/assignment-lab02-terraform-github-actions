@@ -23,7 +23,7 @@ module "vpc" {
 module "keypair" {
   source = "../../modules/keypair"
 
-  name      = "${var.aws_project}-keypair"
+  name      = var.aws_project
   algorithm = "ED25519"
 }
 
@@ -48,8 +48,8 @@ module "public_security_group" {
   ]
   egress_rules_with_cidr = [
     {
-      protocol  = "-1"
-      ip        = "0.0.0.0/0"
+      protocol = "-1"
+      ip       = "0.0.0.0/0"
     }
   ]
 }
@@ -70,55 +70,23 @@ module "private_security_group" {
   ]
   egress_rules_with_cidr = [
     {
-      protocol  = "-1"
-      ip        = "0.0.0.0/0"
+      protocol = "-1"
+      ip       = "0.0.0.0/0"
     }
   ]
 }
 
-# Get Ubuntu 20.04 AMI
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"]
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-}
-
 # Create EC2 instances
-resource "aws_instance" "public_instances" {
-  count                  = var.aws_public_instance_count
-  ami                    = data.aws_ami.ubuntu.id
+module "aws_instances" {
+  source = "../../modules/ec2"
+
+  name                   = var.aws_project
   instance_type          = var.aws_instance_type
-  subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
-  vpc_security_group_ids = [module.public_security_group.id]
+  public_subnets_id      = module.vpc.public_subnets
+  private_subnets_id     = module.vpc.private_subnets
+  public_sgs_id          = [module.public_security_group.id]
+  private_sgs_id         = [module.private_security_group.id]
+  public_instance_count  = var.aws_public_instance_count
+  private_instance_count = var.aws_private_instance_count
   key_name               = module.keypair.key_name
-
-  tags = {
-    Name = "${var.aws_project}-public-instance-${count.index}"
-  }
-}
-
-resource "aws_instance" "private_instances" {
-  count                  = var.aws_private_instance_count
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.aws_instance_type
-  subnet_id              = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
-  vpc_security_group_ids = [module.private_security_group.id]
-  key_name               = module.keypair.key_name
-
-  tags = {
-    Name = "${var.aws_project}-private-instance-${count.index}"
-  }
 }

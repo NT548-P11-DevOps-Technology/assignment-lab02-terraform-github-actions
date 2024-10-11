@@ -1,15 +1,11 @@
-output "public_ip_of_public_instances" {
-  value = aws_instance.public_instances[*].public_ip
+output "public_instances" {
+  value = module.aws_instances.public_instance_ips
 }
 
-output "private_ip_of_public_instances" {
-  value = aws_instance.public_instances[*].private_ip
+output "private_instances" {
+  value = module.aws_instances.private_instance_ips
 }
 
-output "public_ip_of_private_instances" {
-  value = aws_instance.private_instances[*].public_ip
-}
-
-output "private_ip_of_private_instances" {
-  value = aws_instance.private_instances[*].private_ip
+output "key_path" {
+  value = module.keypair.private_key_path
 }

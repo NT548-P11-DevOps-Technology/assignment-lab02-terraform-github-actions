@@ -67,8 +67,13 @@ terraform plan
 ```bash
 terraform apply
 ```
-
 When prompted, type `yes` to confirm.
+
+### 6. Show the Outputs
+
+```bash
+terraform output
+```
 
 ## Accessing EC2 Instances
 
