@@ -28,7 +28,6 @@ variable "aws_owner" {
 variable "aws_vpc_config" {
   description = "VPC configuration"
   type = object({
-    name                         = string,
     cidr_block                   = string,
     enable_dns_support           = bool,
     enable_dns_hostnames         = bool,

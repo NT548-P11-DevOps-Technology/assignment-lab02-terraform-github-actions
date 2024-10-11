@@ -21,44 +21,48 @@ This project uses Terraform to deploy a secure AWS infrastructure consisting of 
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd aws-terraform-infrastructure
+git clone https://github.com/NT548-P11-DevOps-Technology/assignment-lab01-terraform.git aws-terraform-infrastructure
+cd aws-terraform-infrastructure/workflows/lab1
 ```
 
-### 2. Create SSH Key Pair
-
-```bash
-aws ec2 create-key-pair --key-name my-key-pair --query 'KeyMaterial' --output text > my-key-pair.pem
-chmod 400 my-key-pair.pem
-```
-
-### 3. Configure Variables
+### 2. Configure Variables
 
 Create a `terraform.tfvars` file:
 
 ```hcl
-region = "us-east-1"
-environment = "dev"
-vpc_cidr = "10.0.0.0/16"
-public_subnets_cidr = ["10.0.1.0/24", "10.0.2.0/24"]
-private_subnets_cidr = ["10.0.3.0/24", "10.0.4.0/24"]
-availability_zones = ["us-east-1a", "us-east-1b"]
-allowed_ip = "YOUR_IP_ADDRESS/32"  # Replace with your IP
-instance_type = "t2.micro"
+aws_region      = "us-east-1"
+aws_profile     = "<your_aws_cli_profile>"
+aws_environment = "dev"
+aws_project     = "lab1"
+aws_owner       = "devops-team"
+
+aws_vpc_config = {
+  cidr_block                   = "10.10.0.0/16"
+  enable_dns_support           = true
+  enable_dns_hostnames         = true
+  public_subnets_cidr          = ["10.10.1.0/24", "10.10.3.0/24"]
+  private_subnets_cidr         = ["10.10.2.0/24", "10.10.4.0/24"]
+  number_of_availability_zones = 2
+  enable_nat_gateway           = true
+}
+
+aws_public_instance_count  = 2
+aws_private_instance_count = 2
+aws_instance_type          = "t2.micro"
 ```
-### 4. Initialize Terraform
+### 3. Initialize Terraform
 
 ```bash
 terraform init
 ```
 
-### 5. Review the Execution Plan
+### 4. Review the Execution Plan
 
 ```bash
 terraform plan
 ```
 
-### 6. Apply the Configuration
+### 5. Apply the Configuration
 
 ```bash
 terraform apply
@@ -68,45 +72,65 @@ When prompted, type `yes` to confirm.
 
 ## Accessing EC2 Instances
 
+### Add new key to ssh agent
+
+```bash
+ssh-add ./lab1-key.pem
+```
+
 ### Public Instance
 
 ```bash
-ssh -i my-key-pair.pem ec2-user@<public-ip>
+ssh ubuntu@<public-ip>
 ```
 
 The public IP can be found in the Terraform outputs or AWS Console.
 
 ### Private Instance
 
-First, SSH into the public instance, then from there:
+SSH into the private instance via public instane
 
 ```bash
-ssh -i my-key-pair.pem ec2-user@<private-ip>
+ssh -J ubuntu@<public-ip> ubuntu@<private-ip>
 ```
 
 ## Project Structure
 
 ```
 .
-├── main.tf           # Main Terraform configuration
-├── variables.tf      # Variable definitions
-├── outputs.tf        # Output definitions
-├── terraform.tfvars  # Variable values
-└── modules/
-    ├── vpc/
-    ├── nat/
-    ├── route_tables/
-    ├── security_groups/
-    └── ec2/
+├── modules
+│   ├── keypair
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── variable.tf
+│   ├── security_groups
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── variable.tf
+│   └── vpc
+│       ├── main.tf
+│       ├── outputs.tf
+│       └── variables.tf
+├── workflows
+│   ├── lab1
+│   │   ├── .terraform.lock.hcl
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   ├── providers.tf
+│   │   ├── terraform.tf
+│   │   ├── terraform.tfvars
+│   │   └── varibles.tf
+│   └── setup_backend
+├── .gitignore
+└── README.md
 ```
 
 ## Modules
 
-- **VPC**: Creates the VPC, subnets, and Internet Gateway
-- **NAT**: Creates the NAT Gateway for private subnets
-- **Route Tables**: Configures routing for public and private subnets
-- **Security Groups**: Defines security rules for EC2 instances
 - **EC2**: Launches EC2 instances in public and private subnets
+- **keypair** Create SSH key for access EC2 instances
+- **Security Groups**: Defines security rules for EC2 instances
+- **VPC**: Creates the VPC, subnets, Internet Gateway, NAT Gateway for private subnets and Route tables for public and private subnets
 
 ## Clean Up
 
@@ -118,23 +142,16 @@ terraform destroy
 
 **Note**: This will delete all resources created by this project. Make sure you want to do this before confirming.
 
-## Security Considerations
-
-1. The `allowed_ip` variable should be restricted to your IP address or your organization's IP range
-2. Consider using AWS Systems Manager Session Manager instead of SSH for production environments
-3. Regularly update the Amazon Linux 2 AMI for security patches
-
 ## Troubleshooting
 
 1. If `terraform apply` fails:
-   - Check AWS credentials
+   - Check AWS credentials, make sure you specify correctly aws cli profile
    - Verify variable values in terraform.tfvars
    - Ensure your AWS account has proper permissions
 
 2. If you can't SSH into instances:
-   - Verify security group rules
+   - Check if the ssh agent is active
    - Check if the key pair is correct
-   - Ensure you're using the right username (ec2-user for Amazon Linux 2)
 
 ## Contributing
 
