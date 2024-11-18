@@ -8,11 +8,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "learn-terraform-github-actions"
-  CONFIG_DIRECTORY: "./"
-
 jobs:
   Validate:
     runs-on: ubuntu-latest
@@ -71,4 +66,3 @@ jobs:
           echo "Apply Terraform changes"
           echo "Visit this link to approve the changes:""
           terraform apply | grep -A 1 'To view this run in a browser, visit:' | grep -v 'To view this run in a browser, visit:'
-          
