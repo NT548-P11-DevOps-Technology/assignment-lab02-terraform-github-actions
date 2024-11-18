@@ -1,11 +1,4 @@
-terraform {
-  cloud { 
-    organization = "DevOpsUIT" 
-    workspaces { 
-      name = "lab2" 
-    } 
-  }
-  
+terraform { 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
