@@ -11,7 +11,9 @@ on:
 jobs:
   Validate:
     runs-on: ubuntu-latest
-    working-directory: workflows/lab1
+    defaults:
+      run:
+        working-directory: workflows/lab1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.1
