@@ -34,7 +34,6 @@ resource "aws_instance" "public_instances" {
   vpc_security_group_ids = var.public_sgs_id
   key_name               = var.key_name
 
-  security_groups        = [aws_security_group.this.name]
   tags = {
     Name = "${var.name}-public-instance-${count.index}"
   }
