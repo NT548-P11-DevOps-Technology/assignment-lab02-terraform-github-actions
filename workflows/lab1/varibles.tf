@@ -64,3 +64,8 @@ variable "AWS_SESSION_TOKEN" {
   description = "AWS session token"
   type        = string
 }
+
+variable "my_ip" {
+  description = "My IP address"
+  type        = string
+}

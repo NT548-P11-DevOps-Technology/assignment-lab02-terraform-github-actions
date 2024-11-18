@@ -27,10 +27,10 @@ module "vpc" {
 #   algorithm = "ED25519"
 # }
 
-# Get my public IP address
-data "http" "my_ip" {
-  url = "http://checkip.amazonaws.com"
-}
+# # Get my public IP address
+# data "http" "my_ip" {
+#   url = "http://checkip.amazonaws.com"
+# }
 
 # Create Security Groups for Public Subnets
 module "public_security_group" {
@@ -43,7 +43,7 @@ module "public_security_group" {
       from_port = 22
       to_port   = 22
       protocol  = "tcp"
-      ip        = "${trimspace(data.http.my_ip.response_body)}/32"
+      ip        = var.my_ip
     }
   ]
   egress_rules_with_cidr = [
