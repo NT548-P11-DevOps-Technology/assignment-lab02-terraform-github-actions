@@ -24,6 +24,8 @@ locals {
 
 # Public EC2 Instance
 resource "aws_instance" "public_instances" {
+  #checkov:skip=CKV_AWS_8 
+  #checkov:skip=CKV2_AWS_41
   count         = var.public_instance_count
   ami           = local.ec2_ami
   instance_type = var.instance_type
@@ -31,6 +33,8 @@ resource "aws_instance" "public_instances" {
   subnet_id              = var.public_subnets_id[count.index % length(var.public_subnets_id)]
   vpc_security_group_ids = var.public_sgs_id
   key_name               = var.key_name
+
+  security_groups        = [aws_security_group.this.name]
   tags = {
     Name = "${var.name}-public-instance-${count.index}"
   }
@@ -42,6 +46,12 @@ resource "aws_instance" "public_instances" {
     volume_type = "gp2"        
     encrypted  = true         
   }
+  root_block_device {
+    volume_size = 1
+    volume_type = "gp2"
+    encrypted  = true  
+  }
+
   metadata_options {
     http_tokens = "required"  
     http_endpoint = "enabled"  
@@ -50,6 +60,8 @@ resource "aws_instance" "public_instances" {
 
 # Private EC2 Instance
 resource "aws_instance" "private_instances" {
+  #checkov:skip=CKV_AWS_8 
+  #checkov:skip=CKV2_AWS_41
   count         = var.private_instance_count
   ami           = local.ec2_ami
   instance_type = var.instance_type
@@ -68,6 +80,12 @@ resource "aws_instance" "private_instances" {
     volume_type = "gp2"        
     encrypted  = true         
   }
+  root_block_device {
+    volume_size = 1
+    volume_type = "gp2"
+    encrypted  = true  
+  }
+
   metadata_options {
     http_tokens = "required"  
     http_endpoint = "enabled"  

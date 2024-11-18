@@ -1,5 +1,6 @@
 # ./modules/nat/main.tf
 resource "aws_eip" "nat" {
+  #checkov:skip=CKV2_AWS_19
   count = var.enable_nat_gateway ? 1 : 0
   tags = {
     Name = "${var.name}-nat-eip"

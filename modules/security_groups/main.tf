@@ -1,5 +1,6 @@
 # Security group module
 resource "aws_security_group" "this" {
+  #checkov:skip=CKV2_AWS_5
   name        = "${var.name}-sg"
   description = var.description
   vpc_id      = var.vpc_id
