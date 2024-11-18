@@ -11,15 +11,18 @@ on:
 jobs:
   Validate:
     runs-on: ubuntu-latest
+    working-directory: workflows/lab1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 1
 
+      - name: Initialize Terraform
+        run: terraform init
+
       - name: Validate with Terraform
         run: terraform validate
-        working-directory: workflows/lab1
 
   Checkov:
     runs-on: ubuntu-latest
