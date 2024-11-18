@@ -68,14 +68,9 @@ resource "aws_instance" "private_instances" {
   }
   ebs_optimized          = true
   monitoring             = true
-  ebs_block_device {
-    device_name = "/dev/sda1"  
-    volume_size = 1           
-    volume_type = "gp2"        
-    encrypted  = true         
-  }
+
   root_block_device {
-    volume_size = 1
+    volume_size = 10
     volume_type = "gp2"
     encrypted  = true  
   }
