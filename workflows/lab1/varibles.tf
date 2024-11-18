@@ -4,12 +4,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "aws_profile" {
-  description = "AWS profile"
-  type        = string
-  default     = "default"
-}
-
 variable "aws_environment" {
   description = "Environment"
   type        = string
@@ -50,5 +44,23 @@ variable "aws_private_instance_count" {
 
 variable "aws_instance_type" {
   description = "Instance type"
+  type        = string
+}
+
+variable "aws_key_name" {
+  description = "Key pair name"
+  type        = string
+}
+
+variable "AWS_ACCESS_KEY_ID" {
+  description = "AWS access key"
+  type        = string
+}
+variable "AWS_SECRET_ACCESS_KEY" {
+  description = "AWS secret key"
+  type        = string
+}
+variable "AWS_SESSION_TOKEN" {
+  description = "AWS session token"
   type        = string
 }

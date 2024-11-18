@@ -19,13 +19,13 @@ module "vpc" {
   enable_nat_gateway   = var.aws_vpc_config.enable_nat_gateway
 }
 
-# Create Key Pair
-module "keypair" {
-  source = "../../modules/keypair"
+# # Create Key Pair
+# module "keypair" {
+#   source = "../../modules/keypair"
 
-  name      = var.aws_project
-  algorithm = "ED25519"
-}
+#   name      = var.aws_project
+#   algorithm = "ED25519"
+# }
 
 # Get my public IP address
 data "http" "my_ip" {
@@ -88,5 +88,5 @@ module "aws_instances" {
   private_sgs_id         = [module.private_security_group.id]
   public_instance_count  = var.aws_public_instance_count
   private_instance_count = var.aws_private_instance_count
-  key_name               = module.keypair.key_name
+  key_name               = var.aws_key_name
 }
