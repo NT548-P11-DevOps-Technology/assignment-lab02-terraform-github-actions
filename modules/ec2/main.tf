@@ -34,6 +34,18 @@ resource "aws_instance" "public_instances" {
   tags = {
     Name = "${var.name}-public-instance-${count.index}"
   }
+  ebs_optimized          = true
+  monitoring             = true
+  ebs_block_device {
+    device_name = "/dev/sda1"  
+    volume_size = 1           
+    volume_type = "gp2"        
+    encrypted  = true         
+  }
+  metadata_options {
+    http_tokens = "required"  
+    http_endpoint = "enabled"  
+  }
 }
 
 # Private EC2 Instance
@@ -47,5 +59,17 @@ resource "aws_instance" "private_instances" {
   key_name               = var.key_name
   tags = {
     Name = "${var.name}-private-instance-${count.index}"
+  }
+  ebs_optimized          = true
+  monitoring             = true
+  ebs_block_device {
+    device_name = "/dev/sda1"  
+    volume_size = 1           
+    volume_type = "gp2"        
+    encrypted  = true         
+  }
+  metadata_options {
+    http_tokens = "required"  
+    http_endpoint = "enabled"  
   }
 }
