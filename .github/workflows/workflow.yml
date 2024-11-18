@@ -63,6 +63,6 @@ jobs:
 
       - name: Apply with Terraform
         run: |
-          echo "Apply Terraform changes"
-          echo "Visit this link to approve the changes:""
+          echo 'Apply Terraform changes'
+          echo 'Visit this link to approve the changes:'
           terraform apply | grep -A 1 'To view this run in a browser, visit:' | grep -v 'To view this run in a browser, visit:'
