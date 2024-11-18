@@ -87,5 +87,5 @@ jobs:
       - name: Apply with Terraform
         run: |
           echo 'Apply Terraform changes'
-          echo 'Visit this link to approve the changes:'
+          echo 'Visit this link to view the run in a browser:'
           terraform apply -auto-approve 2>/dev/null | grep --no-group-separator -A 1 -m 1 'To view this run in a browser, visit:' | grep -v 'To view this run in a browser, visit:' || true
