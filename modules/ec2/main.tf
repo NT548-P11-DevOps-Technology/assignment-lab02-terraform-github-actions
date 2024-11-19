@@ -66,6 +66,7 @@ resource "aws_instance" "private_instances" {
   tags = {
     Name = "${var.name}-private-instance-${count.index}"
   }
+
   # ebs_optimized          = true
   # monitoring             = true
 
