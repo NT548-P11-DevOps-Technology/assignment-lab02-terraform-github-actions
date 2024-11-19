@@ -66,14 +66,14 @@ resource "aws_instance" "private_instances" {
   tags = {
     Name = "${var.name}-private-instance-${count.index}"
   }
-  ebs_optimized          = true
-  monitoring             = true
+  # ebs_optimized          = true
+  # monitoring             = true
 
-  root_block_device {
-    volume_size = 10
-    volume_type = "gp2"
-    encrypted  = true  
-  }
+  # root_block_device {
+  #   volume_size = 10
+  #   volume_type = "gp2"
+  #   encrypted  = true  
+  # }
 
   metadata_options {
     http_tokens = "required"  
